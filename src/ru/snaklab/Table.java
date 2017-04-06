@@ -6,22 +6,24 @@ package ru.snaklab;
  */
 public class Table implements Cloneable {
 
-    public Table(Point[][] points) {
-        this.points = points;
-    }
+    public static int d = 10; //dimension
+
+    private Point[][] points = new Point[d][d];
 
     public Table() {
     }
 
+    public Table(Point[][] points) {
+        this.points = points;
+    }
+
     public static boolean correctCord(int x, int y){
-        return x >= 0 && x <= 10 && y >= 0 && y<= 10;
+        return x >= 0 && x <= d && y >= 0 && y<= d;
     }
 
     public Point[][] getPoints() {
         return points;
     }
-
-    private Point[][] points = new Point[10][10];
 
     private int getLeftBorder(int y){
         if(y == 0)
@@ -56,6 +58,17 @@ public class Table implements Cloneable {
             }
         }
         return true;
+    }
+
+    public boolean checkAliveShips(){
+        for(int i = 0; i < Table.d; i++){
+            for (int j = 0; j < Table.d ; j++){
+                if(points[i][j].getPointStatus() == PointStatus.HAS_ALIVE_SHIP){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public boolean setShip(int xp, int x, int y, ShipOrientation shipOrientation){

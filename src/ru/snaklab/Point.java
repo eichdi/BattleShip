@@ -26,6 +26,10 @@ public class Point {
         this.pointStatus = pointStatus;
     }
 
+    public PointStatus getPointStatus() {
+        return pointStatus;
+    }
+
     public boolean hasShip(){
         return ship != null;
     }
