@@ -10,24 +10,41 @@ public class Point {
 
     private boolean open = false;
 
-    private PointStatus pointStatus = PointStatus.EMPTY;
+    private PointStatus pointStatusWithoutShip = PointStatus.EMPTY;
+
+    public static Point defaultPoint (){
+        return  new Point();
+    }
 
     public static Point getUndeterminedPoint(){
         return new Point(null, false, PointStatus.UNDETERMINED);
     }
 
     public Point(){
-
     }
 
-    private Point(Ship ship, boolean open, PointStatus pointStatus){
+    private Point(Ship ship, boolean open, PointStatus pointStatusWithoutShip){
         this.ship = ship;
         this.open = open;
-        this.pointStatus = pointStatus;
+        this.pointStatusWithoutShip = pointStatusWithoutShip;
     }
 
     public PointStatus getPointStatus() {
-        return pointStatus;
+        if(hasShip()){
+            switch (ship.getShipStatus()){
+                case ALIVE_SHIP:
+                    return PointStatus.HAS_ALIVE_SHIP;
+                case WOUNDED_SHIP:
+                    return PointStatus.HAS_WOUNDED_SHIP;
+                case DEATH_SHIP:
+                    return PointStatus.HAS_DEATH_SHIP;
+                default:
+                    return null;
+            }
+        }
+        else {
+            return pointStatusWithoutShip;
+        }
     }
 
     public boolean hasShip(){
@@ -39,8 +56,8 @@ public class Point {
     }
 
     public boolean setShip(Ship ship){
-        if(ship == null){
-            pointStatus = PointStatus.HAS_ALIVE_SHIP;
+        if(this.ship == null){
+            pointStatusWithoutShip = PointStatus.HAS_ALIVE_SHIP;
             this.ship = ship;
             return true;
         }
@@ -50,15 +67,12 @@ public class Point {
     public boolean attack(){
         if(!isOpen() && hasShip() && ship.isAlive()){
             ship.attack();
-            if(ship.isAlive())
-                pointStatus = PointStatus.HAS_WOUNDED_SHIP;
-            else
-                pointStatus = PointStatus.HAS_DEATH_SHIP;
+            open = true;
             return true;
         }
 
         if(isOpen()){
-            return true;
+            return false;
         }
         else{
             open = true;
@@ -68,7 +82,10 @@ public class Point {
 
     @Override
     public Object clone(){
-        return new Point((Ship) this.ship.clone(), this.open, this.pointStatus);
+        if(this.ship == null)
+            return new Point(this.ship, this.open, this.pointStatusWithoutShip);
+        else
+            return new Point((Ship) this.ship.clone(), this.open, this.pointStatusWithoutShip);
     }
 
 }
